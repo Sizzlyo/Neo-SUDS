@@ -21,13 +21,6 @@ ezButton button2(BUTTON2_PIN);  // create ezButton object that attach to pin 7;
 int led1_state = LOW;   // the current state of LED
 int led2_state = LOW;   // the current state of LED
 
-
-/*Simple display stopwatch program with stop, start, reset and lap buttons.*/
-
-//including  liblary for disp
-
-//setting up display INPUT pins
-
 //setting hours, minutes, secound  and miliseconds to 0
 int h1=0;     
 int m1=0;     
@@ -71,6 +64,8 @@ void stopwatch(){
     h1++;  
     }
   }
+
+  // reset section of desplay if corresponding led is off
   else if (!is_led_1_on) {
     h1 = 0;     
     m1 = 0;     
@@ -91,6 +86,8 @@ void stopwatch(){
     h2++;  
     }
   }
+
+  // reset section of desplay if corresponding led is off
   else if (!is_led_2_on) {
     h2 = 0;     
     m2 = 0;     
@@ -98,6 +95,7 @@ void stopwatch(){
   }
 }
 
+// put stopwatch in it's own protothread
 static int protothread1(struct pt *pt, int interval) {
   static unsigned long timestamp = 0;
   PT_BEGIN(pt);
@@ -126,6 +124,7 @@ void setup() {
   // text display tests
   display.setTextSize(2);
   display.setTextColor(WHITE);
+
   pinMode(LED1_PIN, OUTPUT);   // set arduino pin to output mode
   pinMode(LED2_PIN, OUTPUT);
   button1.setDebounceTime(50); // set debounce time to 50 milliseconds
@@ -135,6 +134,8 @@ void setup() {
 void loop() {
   button1.loop(); // MUST call the loop() function first
   button2.loop();
+
+  // check if button 1 is pressed
   if(button1.isPressed()) {
     Serial.println("The button is pressed");
 
@@ -146,6 +147,7 @@ void loop() {
     digitalWrite(LED1_PIN, led1_state); 
   }
 
+  // check if button 2 is pressed
   if(button2.isPressed()) {
     Serial.println("The button is pressed");
 
@@ -156,5 +158,7 @@ void loop() {
     // control LED arccoding to the toggleed sate
     digitalWrite(LED2_PIN, led2_state); 
   }
+  
+  // start stopwatch thread
   protothread1(&pt1, 1000);
 }
